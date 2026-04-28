@@ -88,7 +88,6 @@ Scenario: Verificar login
 El proyecto utiliza **Allure Framework** para generar reportes visuales detallados. Los reportes incluyen:
 - Resumen general de pruebas
 - Detalles de cada caso de prueba
-- Capturas de pantalla (attachments)
 - Historial de ejecuciones
 
 Para ver el reporte después de ejecutar las pruebas:
