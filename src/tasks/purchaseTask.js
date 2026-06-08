@@ -30,11 +30,21 @@ export const purchaseTask = {
 
         const continueBtn = await $(checkoutUI.continueBtn);
         await continueBtn.waitForDisplayed({ timeout: 15000 });
+        await driver.pause(1000); 
         await continueBtn.click();
 
         const finish = await $(checkoutUI.finishBtn);
-        await finish.waitForDisplayed({ timeout: 30000 });
-        await finish.scrollIntoView();
+        
+        try {
+            await finish.waitForDisplayed({ timeout: 5000 });
+        } catch (e) {
+            console.log('El botón FINISH no es visible, ejecutando scroll estratégico de Android...');
+            
+            const androidScrollSelector = 'new UiScrollable(new UiSelector().scrollable(true)).scrollIntoView(new UiSelector().description("test-FINISH"))';
+            await $(`android=${androidScrollSelector}`);
+        }
+
+        await finish.waitForDisplayed({ timeout: 10000 });
         await finish.click();
     }
 };
