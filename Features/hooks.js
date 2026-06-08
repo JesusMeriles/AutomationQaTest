@@ -9,7 +9,8 @@ Before(async (scenario) => {
         await driver.activateApp(appId);
         
     } catch (error) {
-        console.log('Error en el Hook Before:', error.message);
+        console.error(`Error en el Hook Before al iniciar la app: ${error.message}`);
+        throw error; 
     }
 });
 

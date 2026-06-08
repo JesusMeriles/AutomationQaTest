@@ -1,4 +1,27 @@
-exports.config = {
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+const isCI = process.env.CI === 'true';
+
+const androidCapabilities = {
+    'appium:platformName': 'Android',
+    'appium:platformVersion': process.env.ANDROID_PLATFORM_VERSION || '12.0',
+    'appium:deviceName': process.env.ANDROID_DEVICE_NAME || 'Pixel 8 Pro API 31',
+    'appium:automationName': 'UiAutomator2',
+    'appium:app': join(__dirname, 'app', 'Android.SauceLabs.Mobile.Sample.app.2.3.0.apk'),
+    'appium:appPackage': 'com.swaglabsmobileapp',
+    'appium:appActivity': 'com.swaglabsmobileapp.MainActivity',
+    'appium:appWaitActivity': '*',
+    'appium:noReset': false,
+    'appium:fullReset': false,
+    'appium:autoGrantPermissions': true,
+    'appium:newCommandTimeout': 300000,
+};
+
+export const config = {
     //
     // ====================
     // Runner Configuration
@@ -22,7 +45,7 @@ exports.config = {
     // of the config file unless it's absolute.
     //
     specs: [
-        './Features/**/*.feature'
+        join(__dirname, 'Features/**/*.feature')
     ],
     // Patterns to exclude.
     exclude: [
@@ -50,21 +73,7 @@ exports.config = {
     // Sauce Labs platform configurator - a great tool to configure your capabilities:
     // https://saucelabs.com/platform/platform-configurator
     //
-    capabilities: [{
-        "appium:platformName": "Android",
-        "appium:platformVersion": "12",
-        "appium:deviceName": "Pixel 8 Pro API 31",
-        "appium:automationName": "UiAutomator2",
-        "appium:app": "D:\\Automation QA\\app\\Android.SauceLabs.Mobile.Sample.app.2.3.0.apk",
-        'appium:appPackage': 'com.swaglabsmobileapp',
-        'appium:appActivity': 'com.swaglabsmobileapp.MainActivity', // o MainActivity si sigue fallando
-        'appium:appWaitActivity': '*',
-        'appium:platformVersion': '12.0',
-        'appium:noReset': false, 
-        'appium:fullReset': false,
-        'appium:autoGrantPermissions': true,
-        'appium:newCommandTimeout': 300000,
-    }],
+    capabilities: [androidCapabilities],
 
     //
     // ===================
@@ -73,7 +82,7 @@ exports.config = {
     // Define all options that are relevant for the WebdriverIO instance here
     //
     // Level of logging verbosity: trace | debug | info | warn | error | silent
-    logLevel: 'info',
+    logLevel: isCI ? 'warn' : 'info',
     //
     // Set specific log levels per logger
     // loggers:
@@ -113,7 +122,7 @@ exports.config = {
     // Services take over a specific job you don't want to take care of. They enhance
     // your test setup with almost no effort. Unlike plugins, they don't add new
     // commands. Instead, they hook themselves up into the test process.
-    services: ['appium', 'visual'],
+    services: isCI ? ['appium'] : ['appium', 'visual'],
 
     // Framework you want to run your specs with.
     // The following are supported: Mocha, Jasmine, and Cucumber
@@ -137,7 +146,7 @@ exports.config = {
     // The only one supported by default is 'dot'
     // see also: https://webdriver.io/docs/dot-reporter
     reporters: ['spec', ['allure', {
-        outputDir: 'allure-results',
+        outputDir: join(__dirname, 'allure-results'),
         disableWebdriverStepsReporting: false,
         disableWebdriverScreenshotsReporting: false,
     }]],
@@ -145,7 +154,12 @@ exports.config = {
     // If you are using Cucumber you need to specify the location of your step definitions.
     cucumberOpts: {
         // <string[]> (file/dir) require files before executing features
-        require: ['./Features/Login/login.steps.js','./Features/Products/products.steps.js', './Features/Purchase/purchase.steps.js', './Features/hooks.js'],
+        require: [
+            join(__dirname, 'Features/Login/login.steps.js'),
+            join(__dirname, 'Features/Products/products.steps.js'),
+            join(__dirname, 'Features/Purchase/purchase.steps.js'),
+            join(__dirname, 'Features/hooks.js')
+        ],
         // <boolean> show full backtrace for errors
         backtrace: false,
         // <string[]> ("extension:module") require files with the given EXTENSION after requiring MODULE (repeatable)

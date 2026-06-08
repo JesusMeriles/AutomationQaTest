@@ -1,0 +1,77 @@
+name: Android E2E Tests
+
+on:
+  push:
+    branches:
+      - main
+      - master
+      - UI-Automation
+  pull_request:
+    branches:
+      - main
+      - master
+      - UI-Automation
+  workflow_dispatch:
+
+env:
+  CI: true
+  ANDROID_DEVICE_NAME: emulator-5554
+  ANDROID_PLATFORM_VERSION: '12'
+  APK_URL: https://github.com/saucelabs/sample-app-mobile/releases/download/2.3.0/Android.SauceLabs.Mobile.Sample.app.2.3.0.apk
+  APK_PATH: app/Android.SauceLabs.Mobile.Sample.app.2.3.0.apk
+
+jobs:
+  e2e-android:
+    name: E2E Android (Appium + WebdriverIO)
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Download APK
+        run: |
+          mkdir -p app
+          curl -fsSL -o "$APK_PATH" "$APK_URL"
+          ls -lh "$APK_PATH"
+
+      - name: Enable KVM (aceleración del emulador)
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Run E2E tests on Android emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 31
+          arch: x86_64
+          target: google_apis
+          profile: pixel_6
+          disable-animations: true
+          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
+          script: |
+            adb wait-for-device
+            adb shell 'while [[ -z $(getprop sys.boot_completed) ]]; do sleep 1; done'
+            adb shell input keyevent 82
+            npx appium driver install uiautomator2 2>/dev/null || true
+            npm run test:ci
+
+      - name: Upload Allure results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results
+          path: allure-results/
+          retention-days: 14
+          if-no-files-found: warn
