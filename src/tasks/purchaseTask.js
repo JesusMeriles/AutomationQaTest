@@ -30,7 +30,6 @@ export const purchaseTask = {
 
         const continueBtn = await $(checkoutUI.continueBtn);
         await continueBtn.waitForDisplayed({ timeout: 15000 });
-        await continueBtn.waitForClickable({ timeout: 15000 });
         await continueBtn.click();
 
         const finish = await $(checkoutUI.finishBtn);
