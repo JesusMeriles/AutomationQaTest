@@ -16,14 +16,26 @@ export const purchaseTask = {
 
     fillInformation: async (name, last, zip) => {
 
-        await $(checkoutUI.firstName).waitForDisplayed({ timeout: 5000 });
-        await $(checkoutUI.firstName).setValue(name);
-        await $(checkoutUI.lastName).setValue(last);
-        await $(checkoutUI.postalCode).setValue(zip);
-        await $(checkoutUI.continueBtn).waitForDisplayed({ timeout: 5000 });
-        await $(checkoutUI.continueBtn).click();
+        const firstNameInput = await $(checkoutUI.firstName);
+        await firstNameInput.waitForDisplayed({ timeout: 10000 });
+        await firstNameInput.setValue(name);
+
+        const lastNameInput = await $(checkoutUI.lastName);
+        await lastNameInput.waitForDisplayed({ timeout: 10000 });
+        await lastNameInput.setValue(last);
+
+        const postalCodeInput = await $(checkoutUI.postalCode);
+        await postalCodeInput.waitForDisplayed({ timeout: 10000 });
+        await postalCodeInput.setValue(zip);
+
+        const continueBtn = await $(checkoutUI.continueBtn);
+        await continueBtn.waitForDisplayed({ timeout: 15000 });
+        await continueBtn.waitForClickable({ timeout: 15000 });
+        await continueBtn.click();
+
         const finish = await $(checkoutUI.finishBtn);
-        await finish.waitForDisplayed();
+        await finish.waitForDisplayed({ timeout: 30000 });
+        await finish.scrollIntoView();
         await finish.click();
     }
 };
