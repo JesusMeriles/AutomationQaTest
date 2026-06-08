@@ -1,6 +1,6 @@
-const { checkoutUI } = require('../ui/checkoutUI');
+import { checkoutUI } from '../ui/checkoutUI.js';
 
-const purchaseQuestions = {
+export const purchaseQuestions = {
     isTitleCorrect: async () => {
         const title = await $(checkoutUI.checkoutCompleteTitle);
         return await title.isDisplayed();
@@ -16,5 +16,3 @@ const purchaseQuestions = {
         return await image.isDisplayed();
     }
 };
-
-module.exports = { purchaseQuestions };

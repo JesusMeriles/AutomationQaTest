@@ -1,24 +1,20 @@
-const { Given, When, Then } = require("@wdio/cucumber-framework");
-const { expect, $} = require("@wdio/globals");
-const { catalogQuestions } = require("../../src/questions/productsQuestion.js");
-const { productsTask } = require("../../src/tasks/productsTask.js");
-const { loginTask } = require("../../src/tasks/loginTask.js");
-const { loginQuestions } = require("../../src/questions/loginQuestion.js");
+import { Given, When, Then } from "@wdio/cucumber-framework";
+import { expect } from "@wdio/globals";
+import { catalogQuestions } from "../../src/questions/catalogQuestion.js";
+import { catalogTask } from "../../src/tasks/catalogTask.js";
+import { loginTask } from "../../src/tasks/loginTask.js";
 
 Given(/^El usuario se encuentra en la pantalla principal de productos$/, async () => {
-    
     console.log("Intentando login...");
     await loginTask.as("standard_user", "secret_sauce");
 
     console.log("Validando catálogo...");
-    const isCatalogVisible = await loginQuestions.isCatalogVisible();
+    const isCatalogVisible = await catalogQuestions.isCatalogVisible();
     console.log("Catalog visible:", isCatalogVisible);
-
 });
 
-
 When(/^Aplica el filtro de precio de menor a mayor$/, async () => {
-    await productsTask.byLowToHigh();
+    await catalogTask.byLowToHigh();
 });
 
 Then(/^Deberia ver los productos ordenados por precio de menor a mayor$/, async () => {

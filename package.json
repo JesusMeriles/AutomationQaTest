@@ -1,10 +1,12 @@
 {
   "name": "automation-qa",
   "version": "1.0.0",
+  "type": "module",
   "main": "index.js",
   "scripts": {
     "clean": "rimraf allure-results allure-report",
     "test": "npm run clean && npx wdio run ./wdio.conf.js",
+    "test:ci": "npm run clean && npx wdio run ./wdio.conf.js --cucumberOpts.tags=\"@qa\"",
     "report": "allure generate allure-results --clean && allure open",
     "wdio": "wdio run ./wdio.conf.js"
   },

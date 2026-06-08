@@ -1,8 +1,7 @@
-const { loginUI } = require('../ui/loginUI.js');
+import { loginUI } from '../ui/loginUI.js';
 
-const loginTask = {
+export const loginTask = {
     as: async (username, password) => {
-        await driver.pause(5000); 
         await $(loginUI.userInput).waitForDisplayed({ timeout: 10000 });
         await $(loginUI.passInput).waitForDisplayed({ timeout: 10000 });
         await $(loginUI.loginBtn).waitForDisplayed({ timeout: 10000 });
@@ -16,5 +15,3 @@ const loginTask = {
         await $(loginUI.loginBtn).click();
     }
 };
-
-module.exports = { loginTask };
